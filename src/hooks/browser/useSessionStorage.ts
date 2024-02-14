@@ -58,19 +58,22 @@ function sessionStorage() {
 }
 
 function _useSessionStorage(key: string, initialValue: any = null) {
+  let _initialValue = initialValue
   const refValue = customRef((track, trigger) => {
     return {
       // 获取数据值
       get: () => {
         track()
+        if (_initialValue === null) return null
         const val = storage.get(key)
         if (val !== null) return val
         // 把初始化的值存进去
-        storage.set(key, initialValue)
-        return initialValue
+        storage.set(key, _initialValue)
+        return _initialValue
       },
       // 监听数据变化
       set: newVal => {
+        _initialValue = newVal
         storage.set(key, newVal)
         trigger()
       },
