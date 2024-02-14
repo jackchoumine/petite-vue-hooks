@@ -7,7 +7,7 @@
  * 它是响应式的，当你修改它的值时，会自动存储到 localStorage 中
  * 可把它当成全局的 ref 来用
  */
-import { customRef, nextTick } from 'vue'
+import { customRef, nextTick, ref, watch } from 'vue'
 
 import { storage } from '../../utils'
 
@@ -18,7 +18,28 @@ import { storage } from '../../utils'
  * @example const [count,removeCount] = useLocalStorage('count',0)
  * @example removeCount() // 移除 count 的值 会自动移除 localStorage 中的值，组件更新
  */
-export const useLocalStorage = localStorage()
+export const useLocalStorage = function (key: string, initialValue: any = null) {
+  const refValue = ref(storage.get(key, 'local') ?? initialValue)
+
+  watch(
+    refValue,
+    newVal => {
+      storage.set(key, newVal, 'local')
+    },
+    {
+      deep: true,
+      immediate: true,
+    }
+  )
+
+  return [refValue, removeItem]
+
+  function removeItem() {
+    refValue.value = null
+    // storage.remove(key, 'local')
+    nextTick(() => storage.remove(key, 'local'))
+  }
+}
 
 function localStorage() {
   const map = new Map()

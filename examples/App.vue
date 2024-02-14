@@ -5,7 +5,7 @@
  * @LastEditTime: 2024-02-02 01:27:25
  * @Description : 根组件
 -->
-<script setup lang="ts">
+<script setup>
 import { onMounted, ref, watch } from 'vue'
 
 import { useLocalStorage, useSessionStorage } from '../src/index'
@@ -21,8 +21,8 @@ watch(age_ss, (age, old) => {
 function changeAge() {
   age_ss.value = '重置 sessionStorage 了' + Math.random()
 }
-function changeAge2() {
-  age.value += 1
+function changeAge2(step) {
+  age.value += step
 }
 </script>
 
@@ -31,7 +31,8 @@ function changeAge2() {
   <button @click="changeAge">重置 age_ss</button>
   <button @click="removeAge_ss">移除 age_ss</button>
   <h2>age{{ age }}</h2>
-  <button @click="changeAge2">重置 age</button>
+  <button @click="changeAge2(+1)">age+1</button>
+  <button @click="changeAge2(-1)">age-1</button>
   <button @click="removeAge">移除 age</button>
 </template>
 
