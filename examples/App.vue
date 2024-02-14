@@ -11,27 +11,28 @@ import { onMounted, ref, watch } from 'vue'
 import { useLocalStorage, useSessionStorage } from '../src/index'
 
 const [age, removeAge] = useLocalStorage('age', 24)
-const [age_ss] = useSessionStorage('age', '这是一个sessionStorage')
+
+const [age_ss, removeAge_ss] = useSessionStorage('age', '这是一个sessionStorage')
+
 watch(age_ss, (age, old) => {
   console.log('age_ss', age, old)
-})
-
-onMounted(() => {
-  console.log('age', age.value)
-  console.log('age_ss', age_ss.value)
-  setTimeout(() => {
-    age_ss.value = '重置 sessionStorage 了'
-  }, 3000)
 })
 
 function changeAge() {
   age_ss.value = '重置 sessionStorage 了' + Math.random()
 }
+function changeAge2() {
+  age.value += 1
+}
 </script>
 
 <template>
-      <h3>{{ age_ss }}</h3>
-      <button @click="changeAge">重置 age_ss</button>
+  <h3>{{ age_ss }}</h3>
+  <button @click="changeAge">重置 age_ss</button>
+  <button @click="removeAge_ss">移除 age_ss</button>
+  <h2>age{{ age }}</h2>
+  <button @click="changeAge2">重置 age</button>
+  <button @click="removeAge">移除 age</button>
 </template>
 
 <style scoped>
