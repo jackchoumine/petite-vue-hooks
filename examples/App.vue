@@ -10,6 +10,8 @@ import { onMounted, ref, watch } from 'vue'
 
 import { useLocalStorage, useSessionStorage } from '../src/index'
 
+import UseLocalStorageDemo from './components/UseLocalStorageDemo.vue'
+
 const [age, removeAge] = useLocalStorage('age', 24)
 
 const [age_ss, removeAge_ss] = useSessionStorage('age', '这是一个sessionStorage')
@@ -34,6 +36,8 @@ function changeAge2(step) {
   <button @click="changeAge2(+1)">age+1</button>
   <button @click="changeAge2(-1)">age-1</button>
   <button @click="removeAge">移除 age</button>
+  <hr />
+  <UseLocalStorageDemo />
 </template>
 
 <style scoped>
