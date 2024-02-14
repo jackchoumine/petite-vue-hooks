@@ -11,6 +11,8 @@ import { customRef, nextTick, ref, watch } from 'vue'
 
 import { globalSingleton, storage } from '../../utils'
 
+import { useOn } from './useOn'
+
 /**
  * @param {string} key 键名 全局唯一
  * @param {any} initialValue 初始值 默认为 null
@@ -99,7 +101,18 @@ function __useLocalStorage(key: string, initialValue: any = null) {
       immediate: true,
     }
   )
-
+  useOn(
+    'storage',
+    event => {
+      // @ts-ignore
+      const { key } = event
+      if (key === key) {
+        const val = storage.get(key, 'local')
+        refValue.value = val
+      }
+    },
+    window
+  )
   return [refValue, removeItem]
 
   function removeItem() {
