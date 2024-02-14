@@ -7,3 +7,4 @@
  */
 export * from './storage'
 export * from './globalSingleton'
+export * from './type'
