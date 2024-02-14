@@ -1,0 +1,15 @@
+{
+  "ts test demo": {
+    "prefix": "tstest",
+    "body": [
+      "import { describe, expect, it } from 'vitest'",
+      "",
+      "describe('test-demo$1', () => {",
+      "  it('1+2', () => {",
+      "    expect(1+2).toBe(3)",
+      "  })",
+      "})",
+    ],
+    "description": "ts test demo",
+  },
+}
