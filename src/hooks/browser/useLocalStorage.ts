@@ -9,7 +9,7 @@
  */
 import { customRef, nextTick, ref, watch } from 'vue'
 
-import { storage } from '../../utils'
+import { globalSingleton, storage } from '../../utils'
 
 /**
  * @param {string} key 键名 全局唯一
@@ -18,28 +18,8 @@ import { storage } from '../../utils'
  * @example const [count,removeCount] = useLocalStorage('count',0)
  * @example removeCount() // 移除 count 的值 会自动移除 localStorage 中的值，组件更新
  */
-export const useLocalStorage = function (key: string, initialValue: any = null) {
-  const refValue = ref(storage.get(key, 'local') ?? initialValue)
-
-  watch(
-    refValue,
-    newVal => {
-      storage.set(key, newVal, 'local')
-    },
-    {
-      deep: true,
-      immediate: true,
-    }
-  )
-
-  return [refValue, removeItem]
-
-  function removeItem() {
-    refValue.value = null
-    // storage.remove(key, 'local')
-    nextTick(() => storage.remove(key, 'local'))
-  }
-}
+// export const useLocalStorage = localStorage() //__useLocalStorage
+export const useLocalStorage = globalSingleton(__useLocalStorage)
 
 function localStorage() {
   const map = new Map()
@@ -104,4 +84,27 @@ function _useLocalStorage(key: string, initialValue: any = null) {
     }
   })
   return refValue
+}
+
+function __useLocalStorage(key: string, initialValue: any = null) {
+  const refValue = ref(storage.get(key, 'local') ?? initialValue)
+
+  watch(
+    refValue,
+    newVal => {
+      storage.set(key, newVal, 'local')
+    },
+    {
+      deep: true,
+      immediate: true,
+    }
+  )
+
+  return [refValue, removeItem]
+
+  function removeItem() {
+    refValue.value = null
+    // storage.remove(key, 'local')
+    nextTick(() => storage.remove(key, 'local'))
+  }
 }

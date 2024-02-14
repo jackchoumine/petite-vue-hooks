@@ -6,3 +6,4 @@
  * @Description : 导出接口
  */
 export * from './storage'
+export * from './globalSingleton'
