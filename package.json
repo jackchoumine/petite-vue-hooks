@@ -46,5 +46,29 @@
   "license": "MIT",
   "files": [
     "dist"
-  ]
+  ],
+  "keywords": [
+    "vue",
+    "vue3",
+    "hooks",
+    "composition-api",
+    "vue-hooks",
+    "composable-hooks",
+    "vue-composable-hooks",
+    "petite-vue-hooks",
+    "petite-vue",
+    "use-hooks-vue3",
+    "use-hooks",
+    "use-composable-hooks",
+    "use-vue-hooks"
+  ],
+  "author": {
+    "name": "QiJun Zhou",
+    "email": "zhouqijun4job@163.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+github.com/jackchoumine/petite-vue-hooks.git"
+  },
+  "homepage": "https://github.com/jackchoumine/petite-vue-hooks?tab=readme-ov-file#petit-vue-hooks"
 }
