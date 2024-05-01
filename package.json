@@ -70,7 +70,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+github.com/jackchoumine/petite-vue-hooks.git"
+    "url": "https://github.com/jackchoumine/petite-vue-hooks.git"
   },
-  "homepage": "https://github.com/jackchoumine/petite-vue-hooks?tab=readme-ov-file#petit-vue-hooks"
+  "homepage": "https://github.com/jackchoumine/petite-vue-hooks?tab=readme-ov-file#petite-vue-hooks"
 }
