@@ -22,6 +22,7 @@ pnpm add petite-vue-hooks
 <script setup>
   import { useSessionStorage } from 'petit-vue-hooks'
 
+  // reactive sessionStorage 
   const [age_ss] = useSessionStorage('age', 'sessionStorage value')
 
   function changeAge() {
@@ -31,6 +32,6 @@ pnpm add petite-vue-hooks
 
 <template>
   <h3>{{ age_ss }}</h3>
-  <button @click="changeAge">重置 age_ss</button>
+  <button @click="changeAge">change age_ss</button>
 </template>
 ```
