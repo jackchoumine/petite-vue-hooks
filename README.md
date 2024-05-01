@@ -1,4 +1,4 @@
-# petit-vue-hooks
+# petite-vue-hooks
 
 A tiny vue hooks as its name.
 
