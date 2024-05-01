@@ -2,16 +2,18 @@
 
 A tiny vue hooks as its name.
 
+> It is wip. Don't use it in production.
+
 ## Features
 
 ## Installation
 
 ```bash
-npm i petit-vue-hooks
+npm i petite-vue-hooks
 # or yarn
-yarn add petit-vue-hooks
+yarn add petite-vue-hooks
 # or pnpm
-pnpm add petit-vue-hooks
+pnpm add petite-vue-hooks
 ```
 
 ## Usage
@@ -20,10 +22,10 @@ pnpm add petit-vue-hooks
 <script setup>
   import { useSessionStorage } from 'petit-vue-hooks'
 
-  const [age_ss] = useSessionStorage('age', '这是一个sessionStorage')
+  const [age_ss] = useSessionStorage('age', 'sessionStorage value')
 
   function changeAge() {
-    age_ss.value = '重置 sessionStorage 了' + Math.random()
+    age_ss.value = 'reset sessionStorage ' + Math.random()
   }
 </script>
 
