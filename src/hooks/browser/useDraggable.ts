@@ -2,7 +2,7 @@
  * @Author      : ZhouQiJun
  * @Date        : 2023-07-26 19:01:00
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-07-17 00:43:22
+ * @LastEditTime: 2024-07-17 01:23:20
  * @Description : 拖拽元素 hook
  */
 import { debounce } from 'petite-utils'
@@ -26,13 +26,24 @@ export interface DraggableOptions {
   dragZIndex: number
 }
 
+type divRef = HTMLElement | null
+
 /**
  * 拖拽元素 hook
  * @param options
  * @param options.dragTips 鼠标移动到可拖拽元素上时的提示
  * @param options.dragZIndex 拖拽时的 z-index，默认为 10，可根据实际情况调整，防止被其他元素遮挡
+ * @example
+ * ```html
+ * <script setup>
+ * import { useDraggable } from 'petite-vue-hooks'
+ * const { setDragEle } = useDraggable()
+ * </script>
+ * <template>
+ *   <div :ref="setDragEle">拖动元素</div>
+ * </template>
+ * ```
  */
-type divRef = HTMLElement | null
 function useDraggable(
   options: DraggableOptions = {
     dragTips: '长按鼠标，可拖动',
@@ -40,6 +51,7 @@ function useDraggable(
   }
 ) {
   const enable = ref(true)
+  const isPanned = computed(() => !enable.value)
   const title = computed(() => (unref(enable) ? options.dragTips : ''))
   const { setHoverEle, isHover } = useHover({
     in: dragTarget => {
@@ -130,13 +142,42 @@ function useDraggable(
   useOn('resize', debounceOnWindowResize, window)
 
   return {
+    /**
+     * 是否固定，固定后不可拖动
+     * 值和 isDraggable 相反
+     */
+    isPanned,
+    /**
+     * 是否可拖动
+     */
     isDraggable: readonly(enable),
+    /**
+     * 是否正在拖动
+     */
     dragging: readonly(dragging),
+    /**
+     * 元素的位置
+     */
     position: readonly(position),
+    /**
+     * 设置拖动元素
+     */
     setDragEle,
+    /**
+     * 设置拖动时需要定位的元素, 默认为拖动元素
+     */
     setPositionEle,
+    /**
+     * 设置限制拖动范围的元素
+     */
     setExtentEle,
+    /**
+     * 禁用拖动
+     */
     disableDraggable,
+    /**
+     * 启用拖动
+     */
     enableDraggable,
   }
   /**
