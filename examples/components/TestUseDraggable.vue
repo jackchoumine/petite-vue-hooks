@@ -2,10 +2,11 @@
  * @Author      : ZhouQiJun
  * @Date        : 2024-07-16 21:36:51
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-07-16 22:45:48
+ * @LastEditTime: 2024-07-17 00:24:55
  * @Description : 测试 useDraggable
 -->
-<script setup>
+<script setup lang="ts">
+// @ts-ignore
 import { useDraggable } from '@'
 
 const { dragging, position, setDragEle, setExtentEle } = useDraggable()

@@ -2,9 +2,10 @@
  * @Author      : ZhouQiJun
  * @Date        : 2023-07-26 19:01:00
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-07-16 22:49:29
+ * @LastEditTime: 2024-07-17 00:24:09
  * @Description : 拖拽元素 hook
  */
+import { debounce } from 'petite-utils'
 import type { MaybeRef, VNodeRef } from 'vue'
 import {
   computed,
@@ -18,6 +19,7 @@ import {
 } from 'vue'
 
 import { useHover } from './useHover'
+import { useOn } from './useOn'
 
 export interface DraggableOptions {
   dragTips?: string
@@ -40,10 +42,14 @@ function useDraggable(
   }
 ) {
   const title = computed(() => (unref(enable) ? options.dragTips : ''))
-  const { setHoverEle } = useHover({
+  const { setHoverEle, isHover } = useHover({
     in: dragTarget => {
       if (!dragTarget) return
       dragTarget.title = title.value as string
+    },
+    out: dragTarget => {
+      if (!dragTarget) return
+      dragTarget.title = ''
     },
   })
   const position = reactive({ left: 'auto', top: 'auto' })
@@ -75,7 +81,7 @@ function useDraggable(
    * @returns
    */
   const setExtentEle = (ele: divRef) => {
-    if (extentEle.value) return
+    // if (extentEle.value) return
     extentEle.value = ele
   }
   // 是否绑定事件
@@ -103,23 +109,42 @@ function useDraggable(
 
   setExtentEle(document.body)
 
-  watch([extentEle, positionEle], ([extent, position]) => {
-    // console.log({
-    //   extent,
-    //   position,
-    // })
-    if (position) {
-      calcExtent(extent || document.body, position)
+  watch(
+    [extentEle, positionEle],
+    () => {
+      // console.log({
+      //   extent,
+      //   position,
+      // })
+      onExtentSizeChange()
+      onPositionSizeChange()
+    },
+    {
+      flush: 'post',
     }
-  })
+  )
+  let extentSizeObserver: ResizeObserver
+  let positionSizeObserver: ResizeObserver
   onBeforeUnmount(() => {
     if (dragEle.value) dragEle.value.removeEventListener('mouseup', onMouseup)
+    if (extentSizeObserver && extentEle.value) {
+      extentSizeObserver.unobserve(extentEle.value)
+    }
+    if (positionSizeObserver && positionEle.value) {
+      positionSizeObserver.unobserve(positionEle.value)
+    }
   })
 
   let shiftX = 0
   let shiftY = 0
   let initTransition = ''
   let dragEleInitCursor = ''
+
+  const debounceOnWindowResize = debounce(() => {
+    // console.log('debounceOnWindowResize')
+    positionEle.value && extentEle.value && calcExtent(extentEle.value, positionEle.value)
+  }, 300)
+  useOn('resize', debounceOnWindowResize, window)
 
   return {
     dragging: readonly(dragging),
@@ -175,7 +200,7 @@ function useDraggable(
   }
 
   function moveAt({ pageX, pageY }: MouseEvent) {
-    if (!dragEle.value || !positionEle.value) return
+    if (!isHover || !dragEle.value || !positionEle.value) return
     const currentX = pageX - shiftX
     const currentY = pageY - shiftY
     const _left = `${clamp(currentX, _extent.minX, _extent.maxX)}px`
@@ -191,6 +216,33 @@ function useDraggable(
     positionEle.value.style.top = _top
     positionEle.value.style.zIndex = '' + options.dragZIndex
   }
+  function onExtentSizeChange() {
+    // console.log('onExtentSizeChange')
+    // @ts-ignore
+    const debounceHandle = debounce(entries => {
+      // @ts-ignore
+      const extentEle = entries[0].target
+      positionEle.value && calcExtent(extentEle, positionEle.value)
+    })
+    extentSizeObserver = new ResizeObserver(debounceHandle)
+    if (extentEle.value) {
+      extentSizeObserver.observe(extentEle.value)
+    }
+  }
+
+  function onPositionSizeChange() {
+    // console.log('onPositionSizeChange')
+    // @ts-ignore
+    const debounceHandle = debounce(entries => {
+      // @ts-ignore
+      const positionEle = entries[0].target
+      extentEle.value && calcExtent(extentEle.value, positionEle)
+    })
+    positionSizeObserver = new ResizeObserver(debounceHandle)
+    if (positionEle.value) {
+      positionSizeObserver.observe(positionEle.value)
+    }
+  }
   function disableDrag() {
     return false
   }
@@ -198,12 +250,13 @@ function useDraggable(
     const react = extentEle?.getBoundingClientRect()
     const positionReact = positionEle?.getBoundingClientRect()
     if (!react || !positionReact) return
+    // console.log(react)
     const { width, height } = positionReact
     _extent.minX = react?.left || 0
     _extent.minY = react?.top || 0
     _extent.maxX = react?.right - width || 0
     _extent.maxY = react?.bottom - height || 0
-    console.log(_extent)
+    // console.log(_extent)
   }
 }
 
