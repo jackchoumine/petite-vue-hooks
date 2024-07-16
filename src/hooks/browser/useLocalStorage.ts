@@ -7,7 +7,9 @@
  * 它是响应式的，当你修改它的值时，会自动存储到 localStorage 中
  * 可把它当成全局的 ref 来用
  */
-import { customRef, nextTick, ref, watch } from 'vue'
+import { customRef, nextTick, ref, watch } from 'vue';
+
+
 
 import { globalSingleton, storage } from '../../utils'
 
@@ -68,7 +70,7 @@ function _useLocalStorage(key: string, initialValue: any = null) {
       get: () => {
         track()
         if (_initialValue === null) return null
-        let val = storage.get(key, 'local')
+        const val = storage.get(key, 'local')
         console.log('get', _initialValue)
         if (val !== null) return val
         // 把初始化的值存进去
@@ -88,8 +90,8 @@ function _useLocalStorage(key: string, initialValue: any = null) {
   return refValue
 }
 
-function __useLocalStorage(key: string, initialValue: any = null) {
-  const refValue = ref(storage.get(key, 'local') ?? initialValue)
+function __useLocalStorage(key: string) {
+  const refValue = ref(storage.get(key, 'local'))
 
   watch(
     refValue,
@@ -98,7 +100,7 @@ function __useLocalStorage(key: string, initialValue: any = null) {
     },
     {
       deep: true,
-      immediate: true,
+      // immediate: true,
     }
   )
   useOn(
@@ -118,6 +120,6 @@ function __useLocalStorage(key: string, initialValue: any = null) {
   function removeItem() {
     refValue.value = null
     // storage.remove(key, 'local')
-    nextTick(() => storage.remove(key, 'local'))
+    nextTick(() => storage.set(key, null, 'local'))
   }
 }
