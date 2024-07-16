@@ -2,7 +2,7 @@
  * @Author      : ZhouQiJun
  * @Date        : 2023-07-26 19:01:00
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-07-17 00:24:09
+ * @LastEditTime: 2024-07-17 00:27:12
  * @Description : 拖拽元素 hook
  */
 import { debounce } from 'petite-utils'
@@ -37,7 +37,7 @@ type divRef = HTMLElement | null
 function useDraggable(
   enable: MaybeRef<boolean> = ref(true),
   options: DraggableOptions = {
-    dragTips: '长按鼠标，可拖拽',
+    dragTips: '长按鼠标，可拖动',
     dragZIndex: 10,
   }
 ) {
