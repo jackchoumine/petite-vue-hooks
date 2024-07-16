@@ -130,3 +130,6 @@ dist
 .pnp.*
 
 .history
+.idea
+auto-imports.d.ts
+.eslintrc-auto-import.json
