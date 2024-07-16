@@ -2,7 +2,7 @@
  * @Author      : ZhouQiJun
  * @Date        : 2024-07-16 21:36:51
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-07-17 00:24:55
+ * @LastEditTime: 2024-07-17 00:41:59
  * @Description : 测试 useDraggable
 -->
 <script setup lang="ts">
@@ -10,7 +10,12 @@
 import { useDraggable } from '@'
 
 const { dragging, position, setDragEle, setExtentEle } = useDraggable()
-const { setDragEle: setDragDiv } = useDraggable()
+const {
+  setDragEle: setDragDiv,
+  disableDraggable,
+  enableDraggable,
+  isDraggable,
+} = useDraggable()
 </script>
 
 <template>
@@ -18,6 +23,8 @@ const { setDragEle: setDragDiv } = useDraggable()
     400 x 400
     <div :ref="setDragEle">拖动它 {{ dragging }} {{ position }}</div>
     <div :ref="setDragDiv">拖动它</div>
+    <button @click="disableDraggable">禁止拖动 {{ isDraggable }}</button>
+    <button @click="enableDraggable">启用拖动 {{ isDraggable }}</button>
   </div>
 </template>
 

@@ -2,11 +2,11 @@
  * @Author      : ZhouQiJun
  * @Date        : 2023-07-26 19:01:00
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-07-17 00:27:12
+ * @LastEditTime: 2024-07-17 00:43:22
  * @Description : 拖拽元素 hook
  */
 import { debounce } from 'petite-utils'
-import type { MaybeRef, VNodeRef } from 'vue'
+// import type { MaybeRef, VNodeRef } from 'vue'
 import {
   computed,
   onBeforeUnmount,
@@ -28,19 +28,18 @@ export interface DraggableOptions {
 
 /**
  * 拖拽元素 hook
- * @param enable 是否启用拖拽功能，默认为 true, 可通过 ref 动态控制
  * @param options
  * @param options.dragTips 鼠标移动到可拖拽元素上时的提示
  * @param options.dragZIndex 拖拽时的 z-index，默认为 10，可根据实际情况调整，防止被其他元素遮挡
  */
 type divRef = HTMLElement | null
 function useDraggable(
-  enable: MaybeRef<boolean> = ref(true),
   options: DraggableOptions = {
     dragTips: '长按鼠标，可拖动',
     dragZIndex: 10,
   }
 ) {
+  const enable = ref(true)
   const title = computed(() => (unref(enable) ? options.dragTips : ''))
   const { setHoverEle, isHover } = useHover({
     in: dragTarget => {
@@ -86,26 +85,9 @@ function useDraggable(
   }
   // 是否绑定事件
   let bindEvent = false
-  watchEffect(
-    () => {
-      if (!unref(enable) && bindEvent && dragEle.value) {
-        dragEle.value.removeEventListener('mousedown', onMousedown)
-        bindEvent = false
-        return
-      }
-      if (!dragEle.value || bindEvent) return
-      if (!positionEle.value) positionEle.value = dragEle.value
-      setHoverEle(dragEle.value, {})
-      positionEle.value.style.position = 'fixed'
-      position.left = positionEle.value.style.left
-      position.top = positionEle.value.style.top
-      dragEle.value.addEventListener('mousedown', onMousedown)
-      bindEvent = true
-    },
-    {
-      flush: 'post',
-    }
-  )
+  watchEffect(init, {
+    flush: 'post',
+  })
 
   setExtentEle(document.body)
 
@@ -144,14 +126,30 @@ function useDraggable(
     // console.log('debounceOnWindowResize')
     positionEle.value && extentEle.value && calcExtent(extentEle.value, positionEle.value)
   }, 300)
+
   useOn('resize', debounceOnWindowResize, window)
 
   return {
+    isDraggable: readonly(enable),
     dragging: readonly(dragging),
     position: readonly(position),
     setDragEle,
     setPositionEle,
     setExtentEle,
+    disableDraggable,
+    enableDraggable,
+  }
+  /**
+   * 禁用拖动
+   */
+  function disableDraggable() {
+    enable.value = false
+  }
+  /**
+   * 启用拖动
+   */
+  function enableDraggable() {
+    enable.value = true
   }
   function onMousedown(event: MouseEvent) {
     // console.log(event.buttons)
@@ -185,7 +183,7 @@ function useDraggable(
     moveAt(event)
   }
   function onMouseup(event: MouseEvent) {
-    console.log('mouseup', event.buttons)
+    // console.log('mouseup', event.buttons)
     if (!dragEle.value || !positionEle.value) return
 
     document.removeEventListener('mousemove', onMove)
@@ -257,6 +255,21 @@ function useDraggable(
     _extent.maxX = react?.right - width || 0
     _extent.maxY = react?.bottom - height || 0
     // console.log(_extent)
+  }
+  function init() {
+    if (!unref(enable) && bindEvent && dragEle.value) {
+      dragEle.value.removeEventListener('mousedown', onMousedown)
+      bindEvent = false
+      return
+    }
+    if (!dragEle.value || bindEvent) return
+    if (!positionEle.value) positionEle.value = dragEle.value
+    setHoverEle(dragEle.value, {})
+    positionEle.value.style.position = 'fixed'
+    position.left = positionEle.value.style.left
+    position.top = positionEle.value.style.top
+    dragEle.value.addEventListener('mousedown', onMousedown)
+    bindEvent = true
   }
 }
 
