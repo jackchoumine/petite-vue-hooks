@@ -18,20 +18,38 @@ pnpm add petite-vue-hooks
 
 ## Usage
 
+### useDraggable
+
+Make an element draggable.
+
+#### base usage
+
+Drag element in the whole window.
+
 ```html
 <script setup>
-  import { useSessionStorage } from 'petit-vue-hooks'
+  import { useDraggable } from 'petite-vue-hooks'
 
-  // reactive sessionStorage 
-  const [age_ss] = useSessionStorage('age', 'sessionStorage value')
-
-  function changeAge() {
-    age_ss.value = 'reset sessionStorage ' + Math.random()
-  }
+  const { setDragEle } = useDraggable()
 </script>
-
 <template>
-  <h3>{{ age_ss }}</h3>
-  <button @click="changeAge">change age_ss</button>
+  <div :ref="setDragEle">Drag me</div>
+</template>
+```
+
+#### set a drag area
+
+You can set a drag area by `setExtentEle`
+
+```html
+<script setup>
+  import { useDraggable } from 'petite-vue-hooks'
+
+  const { setDragEle, setExtentEle } = useDraggable()
+</script>
+<template>
+  <div :ref="setExtentEle" class="extent-draggable">
+    <div :ref="setDragEle">Drag me only in extent-draggable div</div>
+  </div>
 </template>
 ```
