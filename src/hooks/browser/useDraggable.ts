@@ -2,7 +2,7 @@
  * @Author      : ZhouQiJun
  * @Date        : 2023-07-26 19:01:00
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-07-16 21:53:52
+ * @LastEditTime: 2024-07-16 22:49:29
  * @Description : 拖拽元素 hook
  */
 import type { MaybeRef, VNodeRef } from 'vue'
@@ -13,6 +13,7 @@ import {
   readonly,
   ref,
   unref,
+  watch,
   watchEffect,
 } from 'vue'
 
@@ -59,6 +60,24 @@ function useDraggable(
     if (positionEle.value) return
     positionEle.value = ele
   }
+
+  const _extent = {
+    minX: 0,
+    minY: 0,
+    maxX: 0,
+    maxY: 0,
+  }
+  // 拖动范围元素
+  const extentEle = ref<divRef>(null)
+  /**
+   * 设置限制拖动范围的元素
+   * @param ele 限制拖动范围的元素
+   * @returns
+   */
+  const setExtentEle = (ele: divRef) => {
+    if (extentEle.value) return
+    extentEle.value = ele
+  }
   // 是否绑定事件
   let bindEvent = false
   watchEffect(
@@ -82,6 +101,17 @@ function useDraggable(
     }
   )
 
+  setExtentEle(document.body)
+
+  watch([extentEle, positionEle], ([extent, position]) => {
+    // console.log({
+    //   extent,
+    //   position,
+    // })
+    if (position) {
+      calcExtent(extent || document.body, position)
+    }
+  })
   onBeforeUnmount(() => {
     if (dragEle.value) dragEle.value.removeEventListener('mouseup', onMouseup)
   })
@@ -96,6 +126,7 @@ function useDraggable(
     position: readonly(position),
     setDragEle,
     setPositionEle,
+    setExtentEle,
   }
   function onMousedown(event: MouseEvent) {
     // console.log(event.buttons)
@@ -145,8 +176,10 @@ function useDraggable(
 
   function moveAt({ pageX, pageY }: MouseEvent) {
     if (!dragEle.value || !positionEle.value) return
-    const _left = `${pageX - shiftX}px`
-    const _top = `${pageY - shiftY}px`
+    const currentX = pageX - shiftX
+    const currentY = pageY - shiftY
+    const _left = `${clamp(currentX, _extent.minX, _extent.maxX)}px`
+    const _top = `${clamp(currentY, _extent.minY, _extent.maxY)}px`
     // console.log({
     //   left: _left,
     //   top: _top,
@@ -161,6 +194,20 @@ function useDraggable(
   function disableDrag() {
     return false
   }
+  function calcExtent(extentEle: HTMLElement, positionEle: HTMLElement) {
+    const react = extentEle?.getBoundingClientRect()
+    const positionReact = positionEle?.getBoundingClientRect()
+    if (!react || !positionReact) return
+    const { width, height } = positionReact
+    _extent.minX = react?.left || 0
+    _extent.minY = react?.top || 0
+    _extent.maxX = react?.right - width || 0
+    _extent.maxY = react?.bottom - height || 0
+    console.log(_extent)
+  }
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
 export { useDraggable }
