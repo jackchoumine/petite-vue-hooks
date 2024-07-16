@@ -2,7 +2,7 @@
  * @Author      : ZhouQiJun
  * @Date        : 2024-02-01 22:46:28
  * @LastEditors : ZhouQiJun
- * @LastEditTime: 2024-02-02 01:27:25
+ * @LastEditTime: 2024-07-16 21:40:54
  * @Description : 根组件
 -->
 <script setup>
@@ -10,6 +10,8 @@ import { onMounted, ref, watch } from 'vue'
 
 import { useLocalStorage, useSessionStorage } from '../src/index'
 
+import TestUseDraggable from './components/TestUseDraggable.vue'
+import TestUseHover from './components/TestUseHover.vue'
 import UseLocalStorageDemo from './components/UseLocalStorageDemo.vue'
 import UseSessionStorageDemo from './components/UseSessionStorageDemo.vue'
 
@@ -33,6 +35,8 @@ window.addEventListener('storage', event => {
 </script>
 
 <template>
+  <TestUseDraggable />
+  <TestUseHover />
   <h3>{{ age_ss }}</h3>
   <button @click="changeAge">重置 age_ss</button>
   <button @click="removeAge_ss">移除 age_ss</button>
