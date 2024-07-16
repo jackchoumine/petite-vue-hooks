@@ -1,8 +1,8 @@
 <script setup>
 import { useLocalStorage } from '../../src/index'
 
-const [age, removeAge] = useLocalStorage('age', 24)
-
+const [age, removeAge] = useLocalStorage('age')
+// age.value = 'initial age right now'
 function changeAge2(step) {
   age.value += step
 }
@@ -10,6 +10,7 @@ function changeAge2(step) {
 
 <template>
   <div class="useLocalStorageDemo">
+    <h2>useLocalStorage</h2>
     <h3>age:{{ age }}</h3>
     <button @click="changeAge2(+1)">age + 1</button>
     <button @click="changeAge2(-1)">age - 1</button>
